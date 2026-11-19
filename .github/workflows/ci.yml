@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Testes (pacotes SPM)
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Versões
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Testes
+        run: make test
+
+  build:
+    name: Build do app
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: XcodeGen
+        run: brew install xcodegen
+
+      - name: Gerar projeto
+        run: xcodegen generate
+
+      # Sem assinatura: a CI só valida que o app compila. Release assinada é feita pelo
+      # mantenedor com scripts/release.sh (ver docs/release.md).
+      - name: Compilar
+        run: |
+          xcodebuild -project Tomafoco.xcodeproj \
+            -scheme Tomafoco \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build

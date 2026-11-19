@@ -1,0 +1,21 @@
+name: Ideia ou melhoria
+description: Sugira uma funcionalidade nova ou uma mudança
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema você quer resolver?
+      description: Descreva a situação do seu dia a dia, não só a solução.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Como você imagina a solução?
+  - type: checkboxes
+    id: pr
+    attributes:
+      label: Contribuição
+      options:
+        - label: Posso abrir um pull request para isso, depois de combinarmos o escopo aqui.

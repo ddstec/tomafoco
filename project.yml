@@ -1,0 +1,84 @@
+# XcodeGen — gera o Tomafoco.xcodeproj de forma determinística (ADR-5).
+# Uso:  brew install xcodegen && xcodegen generate && open Tomafoco.xcodeproj
+name: Tomafoco
+options:
+  bundleIdPrefix: com.dsdumba
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+packages:
+  TomafocoDomain:
+    path: Packages/TomafocoDomain
+  TomafocoApplication:
+    path: Packages/TomafocoApplication
+  TomafocoInfrastructure:
+    path: Packages/TomafocoInfrastructure
+  # Atualização automática fora da Mac App Store (ADR-9). Só o target do app depende
+  # do Sparkle — os pacotes de domínio/aplicação seguem puros.
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.6.0"
+
+targets:
+  Tomafoco:
+    type: application
+    platform: macOS
+    sources:
+      - path: App
+    # Time de assinatura fora do project.yml: um clone compila sem conta Apple Developer
+    # (assinatura local). O mantenedor define DEVELOPMENT_TEAM em Config/Local.xcconfig.
+    configFiles:
+      Debug: Config/Signing.xcconfig
+      Release: Config/Signing.xcconfig
+    dependencies:
+      - package: TomafocoDomain
+      - package: TomafocoApplication
+      - package: TomafocoInfrastructure
+      - package: Sparkle
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.dsdumba.tomafoco
+        PRODUCT_NAME: Tomafoco
+        MARKETING_VERSION: "1.18"
+        CURRENT_PROJECT_VERSION: "19"
+        SWIFT_VERSION: "5.9"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_ENTITLEMENTS: App/Resources/Tomafoco.entitlements
+        DEVELOPMENT_LANGUAGE: pt-BR
+    # Info.plist gerado pelo XcodeGen (fonte única aqui; evita conflito com INFOPLIST_KEY_*).
+    info:
+      path: App/Resources/Info.generated.plist
+      properties:
+        CFBundleDisplayName: Tomafoco
+        # Versão: fonte única = MARKETING_VERSION/CURRENT_PROJECT_VERSION (settings acima).
+        # Sem isso o XcodeGen grava o default 1.0/1 e o bump de versão não pega.
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        LSApplicationCategoryType: public.app-category.productivity
+        LSMinimumSystemVersion: "14.0"
+        # App só barra de menus: não há janela principal — o popover do MenuBarExtra mostra a
+        # MainView inteira. O ícone do Dock e o menu superior entram sob demanda: o
+        # ActivationPolicyController troca para .regular enquanto houver janela (Tarefas,
+        # Relatórios, Configurações) e volta para .accessory quando a última fecha.
+        LSUIElement: true
+        NSHumanReadableCopyright: "© 2026 DDS.TEC. Código aberto sob a licença AGPL-3.0."
+        # Exigido pelo macOS ao pedir permissão de automação de cada navegador (ADR-8).
+        NSAppleEventsUsageDescription: "O Tomafoco precisa controlar seu navegador para redirecionar os sites bloqueados durante as sessões de foco."
+        # Importação de tarefas do app Lembretes (RF-09). O macOS 14+ usa a chave FullAccess;
+        # a antiga fica por compatibilidade do Info.plist (inofensiva).
+        NSRemindersUsageDescription: "O Tomafoco importa suas tarefas do Lembretes para você registrar o tempo de foco em cada uma."
+        NSRemindersFullAccessUsageDescription: "O Tomafoco importa suas tarefas do Lembretes para você registrar o tempo de foco em cada uma."
+        # --- Atualização automática (Sparkle, ADR-9) ---------------------------------
+        # Feed consultado pelo Sparkle. Publicado pelo `scripts/release.sh` junto com o DMG.
+        SUFeedURL: https://tomafoco.dds.tec.br/downloads/appcast.xml
+        # Chave pública EdDSA. O appcast é assinado com a privada (guardada no chaveiro, NUNCA
+        # no repositório) — sem isso qualquer um que controle o servidor ou a rede entregaria
+        # um "update" arbitrário como root do Mac do usuário.
+        SUPublicEDKey: u+xEBQBnQjhtr5BjpWwuRmlXdpxSGyCNxZJTUtXOtTA=
+        # Checagem periódica: 1×/dia. A primeira execução PERGUNTA se pode checar sozinho.
+        SUScheduledCheckInterval: 86400
+        # Só baixa depois do usuário confirmar no diálogo (decisão de produto: num app de
+        # foco, trocar de versão sozinho pode cair no meio de uma sessão).
+        SUAutomaticallyUpdate: false

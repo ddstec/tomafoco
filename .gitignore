@@ -1,0 +1,32 @@
+# Xcode / SPM
+.DS_Store
+build/
+DerivedData/
+# Gerado por XcodeGen — project.yml é a fonte da verdade.
+# (comentário precisa ficar em linha própria: o git não aceita comentário no fim do padrão)
+*.xcodeproj/
+.swiftpm/
+Packages/*/.build/
+# Pacotes SPM clonados fora de build/ para sobreviverem ao `rm -rf build` do release.sh.
+.spm-cache/
+App/Resources/Info.generated.plist
+
+# Assinatura / notarização
+*.p12
+*.provisionprofile
+notarization.log
+
+# Chave privada do Sparkle: vive no chaveiro; um export solto no repo permitiria a
+# qualquer um publicar uma "atualização" que os apps instalados aceitariam.
+*sparkle-key*
+*.p8
+
+# Sistema
+*.dmg
+
+# Configuração local de assinatura (cada um usa o próprio time; ver Config/Signing.xcconfig)
+Config/Local.xcconfig
+
+# Artefatos que já foram parar no repo antigo
+/Tomafoco.app/
+__pycache__/

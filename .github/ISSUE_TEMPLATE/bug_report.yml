@@ -1,0 +1,62 @@
+name: Bug
+description: Algo não funciona como deveria
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar! Vulnerabilidade de segurança? **Não use este formulário** — veja o SECURITY.md.
+  - type: input
+    id: version
+    attributes:
+      label: Versão do Tomafoco
+      description: Configurações › Atualizações, ou o nome do DMG que você baixou.
+      placeholder: "1.18"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: Versão do macOS e tipo de Mac
+      placeholder: "macOS 15.1, Apple Silicon"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Timer / sessões
+        - Bloqueio de sites
+        - Bloqueio de apps
+        - Tarefas, projetos ou Kanban
+        - Relatórios
+        - Atualização automática
+        - Outra
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador (se for bloqueio de site)
+      placeholder: "Chrome 131"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: O que você esperava e o que aconteceu
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Capturas de tela ou logs
+      description: Opcional. Não inclua dados pessoais.

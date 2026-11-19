@@ -1,0 +1,10 @@
+// Assinatura de código do target Tomafoco (referenciado pelo project.yml).
+//
+// Sem time configurado, o Xcode assina "para rodar localmente" (ad-hoc): basta para compilar e
+// rodar um clone ou fork, sem conta Apple Developer.
+//
+// Para assinar com o seu time, copie Local.xcconfig.example para Local.xcconfig (ignorado pelo
+// git) e preencha DEVELOPMENT_TEAM. O `#include?` não falha quando o arquivo não existe.
+DEVELOPMENT_TEAM =
+
+#include? "Local.xcconfig"

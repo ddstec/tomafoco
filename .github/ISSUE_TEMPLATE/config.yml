@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Reportar vulnerabilidade de segurança
+    url: https://github.com/ddstec/tomafoco/security/advisories/new
+    about: Reporte em privado, não em issue pública.
+  - name: Baixar o Tomafoco
+    url: https://tomafoco.dds.tec.br
+    about: Versão assinada e notarizada, com atualização automática.
